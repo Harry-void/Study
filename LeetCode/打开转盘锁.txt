@@ -1,0 +1,119 @@
+//考察队列+BFS
+//有时间限制，考察容器使用，在大容量中查找元素，set容器效率更高，比vector好
+//std::find函数通用性强，但算法效率不好，数据量很大时，效率很低。 当数据量大的时候，考虑特定容器的find函数，效率高点
+
+#include <iostream>
+#include<queue>
+#include<vector>
+#include<set>
+using namespace std;
+
+class Solution {
+public:
+
+	int turnToNumber(string a)
+	{
+		int qian = a[0];
+		int bai = a[1];
+		int shi = a[2];
+		int ge = a[3];
+		int res = (qian - 48) * 1000 + (bai - 48) * 100 + (shi - 48) * 10 + (ge - 48);
+		return res;
+	}
+
+	int openLock(vector<string>& deadends, string target) {
+		int res = 0;
+		queue<string> q;
+		bool visited[10000];
+		memset(visited, 0, sizeof(visited));//标记是否被访问过
+		set<string> deadendsSet(deadends.begin(), deadends.end());
+
+		set<string>::iterator itor = deadendsSet.find("0000");
+		if (itor != deadendsSet.end())
+		{
+			return -1;
+		}
+
+		q.push("0000");
+		visited[0] = true;
+
+		while (!q.empty())
+		{
+			res++;
+			unsigned int size = q.size();
+			for (unsigned int j = 0; j < size; j++)
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					string curs = q.front();
+					char* temp = (char*)curs.c_str();
+					string fspush, aspush;
+					if (temp[i] == '0')
+					{
+						temp[i] = '9';
+						fspush = temp;
+						temp[i] = '1';
+						aspush = temp;
+					}
+					else if (temp[i] == '9')
+					{
+						temp[i] = '8';
+						fspush = temp;
+						temp[i] = '0';
+						aspush = temp;
+					}
+					else
+					{
+						temp[i] = temp[i] - 1;
+						fspush = temp;
+						temp[i] = temp[i] + 2;
+						aspush = temp;
+					}
+					if (fspush == target || aspush == target)
+					{
+						return res;
+					}
+
+					set<string>::iterator itor = deadendsSet.find(fspush);
+					if (itor == deadendsSet.end() && visited[turnToNumber(fspush)] == false)
+					{
+						q.push(fspush);
+						visited[turnToNumber(fspush)] = true;
+					}
+
+					itor = deadendsSet.find(aspush);
+					if (itor == deadendsSet.end() && visited[turnToNumber(aspush)] == false)
+					{
+						q.push(aspush);
+						visited[turnToNumber(aspush)] = true;
+					}
+				}
+				q.pop();
+			}
+		}
+		return -1;
+	}
+};
+
+
+int main()
+{
+	//vector<string> deadends{ "0201", "0101", "0102", "1212", "2002" };
+	//string target = "0202";
+	//vector<string> deadends{ "0000"};
+	string target = "8888";
+	vector<string> deadends{ "8887", "8889", "8878", "8898", "8788", "8988", "7888", "9888" };
+	//string target = "8888";
+	//vector<string> deadends{ "8888"};
+	//string target = "0009";
+
+
+	Solution sol;
+	int res;
+	res = sol.openLock(deadends, target);
+
+	cout << res << endl;
+
+
+	return 0;
+}
