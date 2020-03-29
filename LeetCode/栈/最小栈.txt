@@ -1,0 +1,78 @@
+/*设计一个支持 push，pop，top 操作，并能在常数时间内检索到最小元素的栈。
+
+push(x) -- 将元素 x 推入栈中。
+pop() -- 删除栈顶的元素。
+top() -- 获取栈顶元素。
+getMin() -- 检索栈中的最小元素。*/
+
+//注意地28行，minMember.top >= x  注意不要少了=号
+//比如 push 0  push 1 push 0 getMin pop ,如果没有等号minMember里面将没有元素，再调 getMin会出错
+
+//考察栈
+#include<iostream>
+#include<stack>
+
+using namespace std;
+
+class MinStack {
+public:
+	stack<int> data;
+	stack<int> minMember;
+
+	MinStack() {
+
+	}
+
+	void push(int x) {
+		data.push(x);
+
+		if (minMember.empty() || minMember.top() >= x)
+		{
+			minMember.push(x);
+		}
+	}
+
+	void pop() {
+		if (!data.empty())
+		{
+			if (data.top() == minMember.top())
+			{
+				data.pop();
+				minMember.pop();
+			}
+			else
+			{
+				data.pop();
+			}
+		}
+	}
+
+	int top() {
+
+		return data.top();
+
+	}
+
+	int getMin() {
+
+		return minMember.top();
+
+	}
+};
+
+
+
+
+int main()
+{
+	MinStack minStack;
+	minStack.push(0);
+	minStack.push(1);
+	minStack.push(0);
+	cout << minStack.getMin() << endl;   //-- > 返回 - 3.
+	minStack.pop();
+	//cout << minStack.top() << endl;     // -- > 返回 0.
+	cout << minStack.getMin() << endl;   //-- > 返回 - 2.
+
+	return 0;
+}
